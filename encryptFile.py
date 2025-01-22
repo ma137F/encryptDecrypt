@@ -16,18 +16,16 @@ BUF_SIZE = 65536  # lets read stuff in 64kb chunks!
 
 # Start of self defined functions 
 def get_file_list(folder_path):
-    # Switiching to the user provided directory
-    working_dir = os.chdir(folder_path)
     # returns a list of all directory files
     return os.listdir()
 
-def get_file_data(file_path):
+def get_file_data(file_path): # Changed from file_list
     # Reading data in binary mode 
     with open(file_path, 'rb') as f:
         # f.seek(0)
         data = f.read(BUF_SIZE)
         if not data:
-            pass        # fix with a validation and exit condition 
+            pass        # fix with an a validation and exit condition 
     return data
 
 def get_file_hash(data):
@@ -49,7 +47,7 @@ def encrypt_data_and_b64(data):
     )
     key = base64.urlsafe_b64encode(kdf.derive(password))
     f = Fernet(key)
-    encrypted = f.encrypt(data)
+    encrypted=f.encrypt(data)
     
     # Base64 encoding of encrypted data
     b64 = base64.b64encode(encrypted)
@@ -71,16 +69,29 @@ def main():
 
     # Accepting the folder's path as the first argument,     
     try:
+        # argc represents the argument count - script name and file path 
+        argc = len(sys.argv)
+        if (argc !=2 ):
+            print("Usage: encryptFile.py [DIR_PATH]")
+            sys.exit(1)
+        
         folder_path = sys.argv[1]
-        
-    except IndexError:
-        print("Usage: encryptFile.py [DIR_PATH]")
-        sys.exit()
+               
+        os.chdir(folder_path)
 
-    # Validation for the path input, 
-    if (os.chdir(folder_path)):         # Consider changing to 'if not (os.isdir)' (Ref Google)
-        print(f'{sys.argv[1]} - is not a directory.') # need to fix for a better error messege, 
-        
+    except FileNotFoundError:
+        print(f"Error: Direcory '{folder_path}' not found.")
+        sys.exit(1)
+
+    except NotADirectoryError:
+        print(f"Error: '{folder_path}' is not a directory.")
+        sys.exit(1)
+
+    except PermissionError:
+        print(f"Error: Permission denied when accessing '{folder_path}'.")
+        sys.exit(1)
+
+    # Generating a list of files from the directory path provided by the user 
     file_list = get_file_list(folder_path)
     
     for file_path in file_list:
