@@ -77,9 +77,7 @@ def get_new_file_hash(new_file_path,hash_string):
 def main():
 
     # Accepting the folder's path as the first argument,       
-    try:
-        # sys.argv = ['decrypt.py', r'C:\Users\Mark\Desktop\Python\HDE\5\dev\folder']
-        
+    try:        
         # argc represents the argument count - script name and file path 
         argc = len(sys.argv)
         if (argc !=2 ):
